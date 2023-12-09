@@ -19,6 +19,11 @@ class MultipleWinnerListDto {
     }
     return data;
   }
+
+  @override
+  String toString() {
+    return 'MultipleWinnerListDto(${toJson().toString()})';
+  }
 }
 
 class Years {
@@ -37,5 +42,10 @@ class Years {
     data['year'] = year;
     data['winnerCount'] = winnerCount;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Years(${toJson().toString()})';
   }
 }

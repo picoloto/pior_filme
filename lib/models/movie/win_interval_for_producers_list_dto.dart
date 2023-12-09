@@ -29,6 +29,11 @@ class WinIntervalForProducersListDto {
     }
     return data;
   }
+
+  @override
+  String toString() {
+    return 'WinIntervalForProducersListDto(${toJson().toString()})';
+  }
 }
 
 class Interval {
@@ -53,5 +58,10 @@ class Interval {
     data['previousWin'] = previousWin;
     data['followingWin'] = followingWin;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Interval(${toJson().toString()})';
   }
 }

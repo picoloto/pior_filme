@@ -1,5 +1,5 @@
-import 'package:pior_filme/models/movie.dart';
-import 'package:pior_filme/models/paginator.dart';
+import 'package:pior_filme/models/movie/movie.dart';
+import 'package:pior_filme/models/movie/paginator.dart';
 
 class MovieListDto {
   List<Movie>? content;
@@ -68,5 +68,10 @@ class MovieListDto {
     data['numberOfElements'] = numberOfElements;
     data['empty'] = empty;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'MovieListDto(${toJson().toString()})';
   }
 }

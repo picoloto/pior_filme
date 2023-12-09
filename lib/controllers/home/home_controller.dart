@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pior_filme/models/app_page.dart';
+import 'package:pior_filme/models/app/app_page.dart';
 
 class HomeController extends GetxController {
   final _tabIndex = 0.obs;
