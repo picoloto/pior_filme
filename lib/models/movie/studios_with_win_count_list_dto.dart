@@ -19,6 +19,11 @@ class StudiosWithWinCountListDto {
     }
     return data;
   }
+
+  @override
+  String toString() {
+    return 'StudiosWithWinCountListDto(${toJson().toString()})';
+  }
 }
 
 class Studios {
@@ -37,5 +42,10 @@ class Studios {
     data['name'] = name;
     data['winCount'] = winCount;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Studios(${toJson().toString()})';
   }
 }

@@ -34,4 +34,9 @@ class Movie {
     data['winner'] = winner;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'Movie(${toJson().toString()})';
+  }
 }

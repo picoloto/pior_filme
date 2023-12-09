@@ -36,6 +36,11 @@ class Pageable {
     data['paged'] = paged;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'Pageable(${toJson().toString()})';
+  }
 }
 
 class Sort {
@@ -57,5 +62,10 @@ class Sort {
     data['sorted'] = sorted;
     data['empty'] = empty;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Sort(${toJson().toString()})';
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/route_manager.dart';
-import 'package:pior_filme/models/app_page.dart';
+import 'package:pior_filme/models/app/app_page.dart';
 
 void main() {
   runApp(const PiorFilmeApp());
