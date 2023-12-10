@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:pior_filme/models/movie/movie.dart';
 import 'package:pior_filme/models/movie/multiple_winner_list_dto.dart';
@@ -8,9 +10,23 @@ import 'package:pior_filme/repositories/movie/movie_repository.dart';
 class DashboardController extends GetxController {
   final MovieRepository movieRepository = MovieRepository();
 
-  final topStudiosWithWinCount = RxList<Studio>();
+  final topStudios = RxList<Studio>();
   final topStudiosLoading = RxBool(true);
   final topStudiosError = Rxn();
+
+  final multipleWinners = RxList<Year>();
+  final multipleWinnersLoading = RxBool(true);
+  final multipleWinnersError = Rxn();
+
+  final winIntervalForProducers = Rxn<WinIntervalForProducersListDto>();
+  final winIntervalForProducersLoading = RxBool(true);
+  final winIntervalForProducersError = Rxn();
+
+  final movieWinners = RxList<Movie>();
+  final movieWinnersLoading = RxBool(false);
+  final movieWinnersError = Rxn();
+
+  Timer? debounce;
 
   @override
   void onInit() async {
@@ -19,50 +35,83 @@ class DashboardController extends GetxController {
   }
 
   Future<void> movieYearSearch(String value) async {
-    if (value.isNotEmpty && value.length == 4) {
-      //  List<ProductsCombined> s = await productList.value;
-      // filterProduct = Future.value(s.where((element) => (element.productName.toLowerCase().contains(value.toLowerCase()))).toList()).obs;
-      getMovieWinnerByYear(year: value);
+    if (debounce != null) {
+      debounce!.cancel();
     }
-    // filterProduct = productList;
+
+    debounce = Timer(const Duration(seconds: 1), () {
+      if (value.isNotEmpty && value.length == 4) {
+        getMovieWinnerByYear(year: value);
+      } else {
+        movieWinners.clear();
+        movieWinnersLoading.value = false;
+        movieWinnersError.value = null;
+        update();
+      }
+    });
   }
 
   Future<void> getTopStudiosWithWinCount() async {
     try {
       StudiosWithWinCountListDto data =
           await movieRepository.getStudiosWithWinCount();
-      topStudiosWithWinCount.clear();
+      topStudios.clear();
 
       if (data.studios != null) {
-        topStudiosWithWinCount.addAll(data.studios!.length > 3
+        topStudios.addAll(data.studios!.length > 3
             ? data.studios!.take(3).toList()
             : data.studios!);
       }
-      topStudiosLoading.value = false;
-      update();
     } catch (e) {
-      topStudiosLoading.value = false;
       topStudiosError.value = e;
+    } finally {
+      topStudiosLoading.value = false;
       update();
     }
   }
 
-  Future<List<Year>> getMultipleWinners() async {
-    MultipleWinnerListDto data = await movieRepository.getMultipleWinners();
-    if (data.years != null && data.years!.isNotEmpty) {
-      return data.years!;
+  Future<void> getMultipleWinners() async {
+    try {
+      MultipleWinnerListDto data = await movieRepository.getMultipleWinners();
+      multipleWinners.clear();
+
+      if (data.years != null) {
+        multipleWinners.addAll(data.years!);
+      }
+    } catch (e) {
+      multipleWinnersError.value = e;
+    } finally {
+      multipleWinnersLoading.value = false;
+      update();
     }
-    return [];
   }
 
-  Future<WinIntervalForProducersListDto> getWinIntervalForProducers() async {
-    return await movieRepository.getWinIntervalForProducers();
+  Future<void> getWinIntervalForProducers() async {
+    try {
+      winIntervalForProducers.value =
+          await movieRepository.getWinIntervalForProducers();
+    } catch (e) {
+      winIntervalForProducersError.value = e;
+    } finally {
+      winIntervalForProducersLoading.value = false;
+      update();
+    }
   }
 
-  Future<List<Movie>> getMovieWinnerByYear({String? year}) async {
+  Future<void> getMovieWinnerByYear({String? year}) async {
     if (year != null) {
-      return await movieRepository.getMovieWinnerByYear(year);
+      try {
+        movieWinnersLoading.value = true;
+        update();
+        List<Movie> data = await movieRepository.getMovieWinnerByYear(year);
+        movieWinners.clear();
+        movieWinners.addAll(data);
+      } catch (e) {
+        movieWinnersError.value = e;
+      } finally {
+        movieWinnersLoading.value = false;
+        update();
+      }
     }
-    return [];
   }
 }

@@ -1,69 +1,74 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/models/movie/win_interval_for_producers_list_dto.dart';
 import 'package:pior_filme/shared/widgets/pf_card/pf_card.dart';
+import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_empty_list.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_error.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_loader.dart';
 import 'package:pior_filme/shared/widgets/pf_list_view_separated/pf_list_view_separated.dart';
 
 class ProducerWinsWidget extends StatelessWidget {
-  final DashboardController dashboardController;
-  const ProducerWinsWidget({required this.dashboardController, super.key});
+  const ProducerWinsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WinIntervalForProducersListDto>(
-      future: dashboardController.getWinIntervalForProducers(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<WinIntervalForProducersListDto> snapshot,
-      ) {
-        return PfCard(
-          title: 'Producers with longest and shorest interval between wins',
-          contentWidget: ContentWidget(
-            snapshot: snapshot,
-          ),
-        );
-      },
+    return const PfCard(
+      title: 'Producers with longest and shorest interval between wins',
+      contentWidget: ContentWidget(),
     );
   }
 }
 
-class ContentWidget extends StatelessWidget {
-  final AsyncSnapshot<WinIntervalForProducersListDto> snapshot;
-  const ContentWidget({required this.snapshot, super.key});
+class ContentWidget extends GetView<DashboardController> {
+  const ContentWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (snapshot.hasData) {
-      WinIntervalForProducersListDto winIntervalForProducersListDto =
-          snapshot.data!;
-      List<IntervalWin> maxList = winIntervalForProducersListDto.max ?? [];
-      List<IntervalWin> minList = winIntervalForProducersListDto.min ?? [];
+    controller.getWinIntervalForProducers();
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ProducerWinsTitle(title: 'Maximum'),
-          ProducerWinsList(list: maxList),
-          const Divider(
-            height: 4,
-            indent: 12,
-            endIndent: 12,
-          ),
-          const ProducerWinsTitle(title: 'Minimum'),
-          ProducerWinsList(
-            list: minList,
-            showPadding: true,
-          ),
-        ],
-      );
-    } else if (snapshot.hasError) {
-      return PfFutureError(error: snapshot.error as DioException);
-    } else {
-      return const PfFutureLoader();
-    }
+    return GetBuilder<DashboardController>(
+      builder: (_) {
+        if (controller.winIntervalForProducersLoading.value) {
+          return const PfFutureLoader();
+        }
+
+        if (controller.winIntervalForProducersError.value != null) {
+          return PfFutureError(
+            error:
+                controller.winIntervalForProducersError.value as DioException,
+          );
+        }
+
+        if (controller.winIntervalForProducers.value == null) {
+          return const PfEmptyList();
+        }
+
+        WinIntervalForProducersListDto winIntervalForProducersListDto =
+            controller.winIntervalForProducers.value!;
+        List<IntervalWin> maxList = winIntervalForProducersListDto.max ?? [];
+        List<IntervalWin> minList = winIntervalForProducersListDto.min ?? [];
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ProducerWinsTitle(title: 'Maximum'),
+            ProducerWinsList(list: maxList),
+            const Divider(
+              height: 4,
+              indent: 12,
+              endIndent: 12,
+            ),
+            const ProducerWinsTitle(title: 'Minimum'),
+            ProducerWinsList(
+              list: minList,
+              showPadding: true,
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

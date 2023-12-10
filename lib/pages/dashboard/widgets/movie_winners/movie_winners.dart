@@ -1,68 +1,94 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/models/movie/movie.dart';
 import 'package:pior_filme/shared/widgets/pf_card/pf_card.dart';
+import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_empty_list.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_error.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_loader.dart';
 import 'package:pior_filme/shared/widgets/pf_list_view_separated/pf_list_view_separated.dart';
 
 class MovieWinnersWidget extends StatelessWidget {
-  final DashboardController dashboardController;
-  const MovieWinnersWidget({required this.dashboardController, super.key});
+  const MovieWinnersWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Movie>>(
-      future: dashboardController.getMovieWinnerByYear(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<Movie>> snapshot,
-      ) {
-        return PfCard(
-          title: 'List movie winners by year',
-          contentWidget: ContentWidget(
-            snapshot: snapshot,
-          ),
-        );
-      },
+    return const PfCard(
+      title: 'List movie winners by year',
+      contentWidget: ContentWidget(),
     );
   }
 }
 
 class ContentWidget extends StatelessWidget {
-  final AsyncSnapshot<List<Movie>> snapshot;
-  const ContentWidget({required this.snapshot, super.key});
+  const ContentWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (snapshot.hasData) {
-      List<Movie> list = snapshot.data ?? [];
+    return const Column(
+      children: [
+        YearFilter(),
+        MovieList(),
+      ],
+    );
+  }
+}
 
-      return Column(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 6),
-            child: TextField(
-              onChanged: (t) => {print('t $t')},
-              maxLength: 4,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                filled: false,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                hintText: "Search for Items",
-                prefixIcon: const Icon(Icons.search),
-                prefixIconColor: Colors.black,
-              ),
-            ),
+class YearFilter extends GetView<DashboardController> {
+  const YearFilter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+      child: TextField(
+        onChanged: controller.movieYearSearch,
+        maxLength: 4,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-          PfListViewSeparated(
-            itemCount: list.length,
+          hintText: "Search by year",
+          prefixIcon: const Icon(Icons.search),
+        ),
+      ),
+    );
+  }
+}
+
+class MovieList extends GetView<DashboardController> {
+  const MovieList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    controller.getMovieWinnerByYear();
+
+    return GetBuilder<DashboardController>(
+      builder: (_) {
+        if (controller.movieWinnersLoading.value) {
+          return const PfFutureLoader();
+        }
+
+        if (controller.movieWinnersError.value != null) {
+          return PfFutureError(
+            error: controller.movieWinnersError.value as DioException,
+          );
+        }
+
+        if (controller.movieWinners.isEmpty) {
+          return const PfEmptyList(
+            customMessage: 'Use the year filter to show records',
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: PfListViewSeparated(
+            itemCount: controller.movieWinners.length,
             itemBuilder: (_, index) {
-              Movie movie = list[index];
+              Movie movie = controller.movieWinners[index];
 
               return ListTile(
                 title: Text('${movie.title}'),
@@ -72,12 +98,8 @@ class ContentWidget extends StatelessWidget {
               );
             },
           ),
-        ],
-      );
-    } else if (snapshot.hasError) {
-      return PfFutureError(error: snapshot.error as DioException);
-    } else {
-      return const PfFutureLoader();
-    }
+        );
+      },
+    );
   }
 }

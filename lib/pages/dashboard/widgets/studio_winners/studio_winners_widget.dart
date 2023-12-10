@@ -4,17 +4,16 @@ import 'package:get/get.dart';
 import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/models/movie/studios_with_win_count_list_dto.dart';
 import 'package:pior_filme/shared/widgets/pf_card/pf_card.dart';
+import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_empty_list.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_error.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_loader.dart';
 import 'package:pior_filme/shared/widgets/pf_list_view_separated/pf_list_view_separated.dart';
 
 class StudioWinnersWidget extends StatelessWidget {
-  final DashboardController dashboardController;
-  const StudioWinnersWidget({required this.dashboardController, super.key});
+  const StudioWinnersWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    dashboardController.getTopStudiosWithWinCount();
     return const PfCard(
       title: 'Top 3 studios with winners',
       contentWidget: ContentWidget(),
@@ -22,13 +21,15 @@ class StudioWinnersWidget extends StatelessWidget {
   }
 }
 
-class ContentWidget extends StatelessWidget {
+class ContentWidget extends GetView<DashboardController> {
   const ContentWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    controller.getTopStudiosWithWinCount();
+
     return GetBuilder<DashboardController>(
-      builder: (controller) {
+      builder: (_) {
         if (controller.topStudiosLoading.value) {
           return const PfFutureLoader();
         }
@@ -38,10 +39,14 @@ class ContentWidget extends StatelessWidget {
               error: controller.topStudiosError.value as DioException);
         }
 
+        if (controller.topStudios.isEmpty) {
+          return const PfEmptyList();
+        }
+
         return PfListViewSeparated(
-          itemCount: controller.topStudiosWithWinCount.length,
+          itemCount: controller.topStudios.length,
           itemBuilder: (_, index) {
-            Studio studio = controller.topStudiosWithWinCount[index];
+            Studio studio = controller.topStudios[index];
 
             return ListTile(
               title: Text(studio.name ?? ''),

@@ -1,48 +1,52 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/models/movie/multiple_winner_list_dto.dart';
 import 'package:pior_filme/shared/widgets/pf_card/pf_card.dart';
+import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_empty_list.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_error.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_loader.dart';
 import 'package:pior_filme/shared/widgets/pf_list_view_separated/pf_list_view_separated.dart';
 
 class MultipleWinnersWidget extends StatelessWidget {
-  final DashboardController dashboardController;
-  const MultipleWinnersWidget({required this.dashboardController, super.key});
+  const MultipleWinnersWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Year>>(
-      future: dashboardController.getMultipleWinners(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<Year>> snapshot,
-      ) {
-        return PfCard(
-          title: 'List years with multiple winners',
-          contentWidget: ContentWidget(
-            snapshot: snapshot,
-          ),
-        );
-      },
+    return const PfCard(
+      title: 'List years with multiple winners',
+      contentWidget: ContentWidget(),
     );
   }
 }
 
-class ContentWidget extends StatelessWidget {
-  final AsyncSnapshot<List<Year>> snapshot;
-  const ContentWidget({required this.snapshot, super.key});
+class ContentWidget extends GetView<DashboardController> {
+  const ContentWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (snapshot.hasData) {
-      List<Year> list = snapshot.data ?? [];
+    controller.getMultipleWinners();
+
+    return GetBuilder<DashboardController>(builder: (_) {
+      if (controller.multipleWinnersLoading.value) {
+        return const PfFutureLoader();
+      }
+
+      if (controller.multipleWinnersError.value != null) {
+        return PfFutureError(
+          error: controller.multipleWinnersError.value as DioException,
+        );
+      }
+
+      if (controller.multipleWinners.isEmpty) {
+        return const PfEmptyList();
+      }
 
       return PfListViewSeparated(
-        itemCount: list.length,
+        itemCount: controller.multipleWinners.length,
         itemBuilder: (_, index) {
-          Year year = list[index];
+          Year year = controller.multipleWinners[index];
 
           return ListTile(
             title: Text(year.year.toString()),
@@ -51,10 +55,6 @@ class ContentWidget extends StatelessWidget {
           );
         },
       );
-    } else if (snapshot.hasError) {
-      return PfFutureError(error: snapshot.error as DioException);
-    } else {
-      return const PfFutureLoader();
-    }
+    });
   }
 }
