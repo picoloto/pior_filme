@@ -28,12 +28,6 @@ class DashboardController extends GetxController {
 
   Timer? debounce;
 
-  @override
-  void onInit() async {
-    print('DashboardController');
-    super.onInit();
-  }
-
   Future<void> movieYearSearch(String value) async {
     if (debounce != null) {
       debounce!.cancel();
