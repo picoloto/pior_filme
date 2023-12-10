@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/controllers/home/home_controller.dart';
+import 'package:pior_filme/controllers/movie/movie_controller.dart';
 import 'package:pior_filme/models/app/app_page.dart';
 import 'package:pior_filme/shared/widgets/pf_app_bar/pf_app_bar.dart';
 
@@ -8,6 +10,8 @@ class HomePageBinding implements Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => HomeController());
+    Get.lazyPut(() => DashboardController(), fenix: true);
+    Get.lazyPut(() => MovieController(), fenix: true);
   }
 }
 
@@ -18,10 +22,11 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const PfAppBar(),
-      body: Navigator(
-        key: Get.nestedKey(1),
-        initialRoute: AppPages.getDashboardPageRoute().routeName,
-        onGenerateRoute: AppPages.onGenerateRoute,
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: controller.pageController.value,
+        onPageChanged: controller.changePage,
+        children: AppPages.getTabPages(),
       ),
       bottomNavigationBar: GetBuilder<HomeController>(
         builder: (_) {

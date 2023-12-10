@@ -6,13 +6,6 @@ import 'package:pior_filme/pages/dashboard/widgets/multiple_winners/multiple_win
 import 'package:pior_filme/pages/dashboard/widgets/producer_wins/producer_wins_widget.dart';
 import 'package:pior_filme/pages/dashboard/widgets/studio_winners/studio_winners_widget.dart';
 
-class DashboardPageBinding implements Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => DashboardController());
-  }
-}
-
 class DashboardPage extends GetView<DashboardController> {
   const DashboardPage({super.key});
 

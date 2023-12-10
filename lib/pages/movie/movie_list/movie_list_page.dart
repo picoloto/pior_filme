@@ -4,13 +4,6 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pior_filme/controllers/movie/movie_controller.dart';
 import 'package:pior_filme/models/movie/movie.dart';
 
-class MovieListPageBinding implements Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => MovieController());
-  }
-}
-
 class MovieListPage extends GetView<MovieController> {
   const MovieListPage({super.key});
 
