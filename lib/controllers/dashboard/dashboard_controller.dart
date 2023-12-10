@@ -26,23 +26,26 @@ class DashboardController extends GetxController {
   final movieWinnersLoading = RxBool(false);
   final movieWinnersError = Rxn();
 
-  Timer? debounce;
+  Timer? _debounceTimerYearFilter;
 
   Future<void> movieYearSearch(String value) async {
-    if (debounce != null) {
-      debounce!.cancel();
+    if (_debounceTimerYearFilter != null) {
+      _debounceTimerYearFilter!.cancel();
     }
 
-    debounce = Timer(const Duration(seconds: 1), () {
-      if (value.isNotEmpty && value.length == 4) {
-        getMovieWinnerByYear(year: value);
-      } else {
-        movieWinners.clear();
-        movieWinnersLoading.value = false;
-        movieWinnersError.value = null;
-        update();
-      }
-    });
+    _debounceTimerYearFilter = Timer(
+      const Duration(seconds: 1),
+      () {
+        if (value.isNotEmpty && value.length == 4) {
+          getMovieWinnerByYear(year: value);
+        } else {
+          movieWinners.clear();
+          movieWinnersLoading.value = false;
+          movieWinnersError.value = null;
+          update();
+        }
+      },
+    );
   }
 
   Future<void> getTopStudiosWithWinCount() async {

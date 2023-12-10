@@ -1,15 +1,15 @@
-enum FilterWinner {
+enum WinnerFilter {
   indicated,
   winner,
   all,
 }
 
-extension FilterWinnerPath on FilterWinner {
+extension WinnerFilterPath on WinnerFilter {
   String get path {
     switch (this) {
-      case FilterWinner.indicated:
+      case WinnerFilter.indicated:
         return '&winner=false';
-      case FilterWinner.winner:
+      case WinnerFilter.winner:
         return '&winner=true';
       default:
         return '';
