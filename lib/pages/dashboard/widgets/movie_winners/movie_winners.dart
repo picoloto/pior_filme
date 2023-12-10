@@ -4,55 +4,24 @@ import 'package:get/get.dart';
 import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/models/movie/movie.dart';
 import 'package:pior_filme/shared/widgets/pf_card/pf_card.dart';
+import 'package:pior_filme/shared/widgets/pf_filter/pf_year_filter.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_empty_list.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_error.dart';
 import 'package:pior_filme/shared/widgets/pf_future_widgets/pf_future_loader.dart';
 import 'package:pior_filme/shared/widgets/pf_list_view_separated/pf_list_view_separated.dart';
 
-class MovieWinnersWidget extends StatelessWidget {
+class MovieWinnersWidget extends GetView<DashboardController> {
   const MovieWinnersWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const PfCard(
+    return PfCard(
       title: 'List movie winners by year',
-      contentWidget: ContentWidget(),
-    );
-  }
-}
-
-class ContentWidget extends StatelessWidget {
-  const ContentWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        YearFilter(),
-        MovieList(),
-      ],
-    );
-  }
-}
-
-class YearFilter extends GetView<DashboardController> {
-  const YearFilter({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-      child: TextField(
-        onChanged: controller.movieYearSearch,
-        maxLength: 4,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          hintText: "Search by year",
-          prefixIcon: const Icon(Icons.search),
-        ),
+      contentWidget: Column(
+        children: [
+          PfYearFilter(onChanged: controller.movieYearSearch),
+          const MovieList(),
+        ],
       ),
     );
   }

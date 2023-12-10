@@ -13,16 +13,17 @@ class MovieRepository {
 
   Future<MovieListDto> getMoviesList({
     int page = 0,
-    required FilterWinner filterWinner,
-    int? year,
+    required WinnerFilter filterWinner,
+    String? year,
   }) async {
     try {
-      String pagePath = '?page=$page';
+      String pagePath = year != null ? '?page=0' : '?page=$page';
+      String sizePath = year != null ? '&size=9999' : '&size=15';
       String winnerPath = filterWinner.path;
       String yearPath = year != null ? '&year=$year' : '';
 
       final response = await dio
-          .get('${Environment.apiUrl}$pagePath&size=10$winnerPath$yearPath');
+          .get('${Environment.apiUrl}$pagePath$sizePath$winnerPath$yearPath');
 
       return MovieListDto.fromJson(ApiUtils.convertResponse(response.data));
     } catch (e) {
