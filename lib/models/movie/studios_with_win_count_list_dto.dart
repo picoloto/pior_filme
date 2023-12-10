@@ -1,13 +1,13 @@
 class StudiosWithWinCountListDto {
-  List<Studios>? studios;
+  List<Studio>? studios;
 
   StudiosWithWinCountListDto({this.studios});
 
   StudiosWithWinCountListDto.fromJson(Map<String, dynamic> json) {
     if (json['studios'] != null) {
-      studios = <Studios>[];
+      studios = <Studio>[];
       json['studios'].forEach((v) {
-        studios!.add(Studios.fromJson(v));
+        studios!.add(Studio.fromJson(v));
       });
     }
   }
@@ -26,13 +26,13 @@ class StudiosWithWinCountListDto {
   }
 }
 
-class Studios {
+class Studio {
   String? name;
   int? winCount;
 
-  Studios({this.name, this.winCount});
+  Studio({this.name, this.winCount});
 
-  Studios.fromJson(Map<String, dynamic> json) {
+  Studio.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     winCount = json['winCount'];
   }

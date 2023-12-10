@@ -1,13 +1,13 @@
 class MultipleWinnerListDto {
-  List<Years>? years;
+  List<Year>? years;
 
   MultipleWinnerListDto({this.years});
 
   MultipleWinnerListDto.fromJson(Map<String, dynamic> json) {
     if (json['years'] != null) {
-      years = <Years>[];
+      years = <Year>[];
       json['years'].forEach((v) {
-        years!.add(Years.fromJson(v));
+        years!.add(Year.fromJson(v));
       });
     }
   }
@@ -26,13 +26,13 @@ class MultipleWinnerListDto {
   }
 }
 
-class Years {
+class Year {
   int? year;
   int? winnerCount;
 
-  Years({this.year, this.winnerCount});
+  Year({this.year, this.winnerCount});
 
-  Years.fromJson(Map<String, dynamic> json) {
+  Year.fromJson(Map<String, dynamic> json) {
     year = json['year'];
     winnerCount = json['winnerCount'];
   }
