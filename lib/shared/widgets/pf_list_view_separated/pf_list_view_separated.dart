@@ -11,11 +11,7 @@ class PfListViewSeparated extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: itemCount,
-      padding: const EdgeInsets.only(
-        left: 8,
-        right: 8,
-        bottom: 4,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       separatorBuilder: (context, index) => const Divider(
