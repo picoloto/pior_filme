@@ -1,20 +1,20 @@
 class WinIntervalForProducersListDto {
-  List<Interval>? min;
-  List<Interval>? max;
+  List<IntervalWin>? min;
+  List<IntervalWin>? max;
 
   WinIntervalForProducersListDto({this.min, this.max});
 
   WinIntervalForProducersListDto.fromJson(Map<String, dynamic> json) {
     if (json['min'] != null) {
-      min = <Interval>[];
+      min = <IntervalWin>[];
       json['min'].forEach((v) {
-        min!.add(Interval.fromJson(v));
+        min!.add(IntervalWin.fromJson(v));
       });
     }
     if (json['max'] != null) {
-      max = <Interval>[];
+      max = <IntervalWin>[];
       json['max'].forEach((v) {
-        max!.add(Interval.fromJson(v));
+        max!.add(IntervalWin.fromJson(v));
       });
     }
   }
@@ -36,15 +36,16 @@ class WinIntervalForProducersListDto {
   }
 }
 
-class Interval {
+class IntervalWin {
   String? producer;
   int? interval;
   int? previousWin;
   int? followingWin;
 
-  Interval({this.producer, this.interval, this.previousWin, this.followingWin});
+  IntervalWin(
+      {this.producer, this.interval, this.previousWin, this.followingWin});
 
-  Interval.fromJson(Map<String, dynamic> json) {
+  IntervalWin.fromJson(Map<String, dynamic> json) {
     producer = json['producer'];
     interval = json['interval'];
     previousWin = json['previousWin'];
