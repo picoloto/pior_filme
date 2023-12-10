@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pior_filme/controllers/dashboard/dashboard_controller.dart';
 import 'package:pior_filme/models/movie/studios_with_win_count_list_dto.dart';
 import 'package:pior_filme/shared/widgets/pf_card/pf_card.dart';
@@ -13,48 +14,43 @@ class StudioWinnersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Studio>>(
-      future: dashboardController.getTopStudiosWithWinCount(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<Studio>> snapshot,
-      ) {
-        return PfCard(
-          title: 'Top 3 studios with winners',
-          contentWidget: ContentWidget(
-            snapshot: snapshot,
-          ),
-        );
-      },
+    dashboardController.getTopStudiosWithWinCount();
+    return const PfCard(
+      title: 'Top 3 studios with winners',
+      contentWidget: ContentWidget(),
     );
   }
 }
 
 class ContentWidget extends StatelessWidget {
-  final AsyncSnapshot<List<Studio>> snapshot;
-  const ContentWidget({required this.snapshot, super.key});
+  const ContentWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (snapshot.hasData) {
-      List<Studio> list = snapshot.data ?? [];
+    return GetBuilder<DashboardController>(
+      builder: (controller) {
+        if (controller.topStudiosLoading.value) {
+          return const PfFutureLoader();
+        }
 
-      return PfListViewSeparated(
-        itemCount: list.length,
-        itemBuilder: (_, index) {
-          Studio studio = list[index];
+        if (controller.topStudiosError.value != null) {
+          return PfFutureError(
+              error: controller.topStudiosError.value as DioException);
+        }
 
-          return ListTile(
-            title: Text(studio.name ?? ''),
-            leading: const Icon(Icons.theaters_outlined),
-            subtitle: Text('${studio.winCount.toString()} wins'),
-          );
-        },
-      );
-    } else if (snapshot.hasError) {
-      return PfFutureError(error: snapshot.error as DioException);
-    } else {
-      return const PfFutureLoader();
-    }
+        return PfListViewSeparated(
+          itemCount: controller.topStudiosWithWinCount.length,
+          itemBuilder: (_, index) {
+            Studio studio = controller.topStudiosWithWinCount[index];
+
+            return ListTile(
+              title: Text(studio.name ?? ''),
+              leading: const Icon(Icons.theaters_outlined),
+              subtitle: Text('${studio.winCount.toString()} wins'),
+            );
+          },
+        );
+      },
+    );
   }
 }

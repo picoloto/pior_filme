@@ -66,7 +66,7 @@ class MovieRepository {
     }
   }
 
-  Future<List<Movie>> getMovieWinnerByYear(int year) async {
+  Future<List<Movie>> getMovieWinnerByYear(String year) async {
     try {
       String yearPath = '&year=$year';
 

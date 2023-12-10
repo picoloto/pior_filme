@@ -15,13 +15,16 @@ class DashboardPage extends GetView<DashboardController> {
       builder: (DashboardController controller) {
         return Scaffold(
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                MultipleWinnersWidget(dashboardController: controller),
-                StudioWinnersWidget(dashboardController: controller),
-                ProducerWinsWidget(dashboardController: controller),
-                MovieWinnersWidget(dashboardController: controller),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 32),
+              child: Column(
+                children: [
+                  MultipleWinnersWidget(dashboardController: controller),
+                  StudioWinnersWidget(dashboardController: controller),
+                  ProducerWinsWidget(dashboardController: controller),
+                  MovieWinnersWidget(dashboardController: controller),
+                ],
+              ),
             ),
           ),
         );

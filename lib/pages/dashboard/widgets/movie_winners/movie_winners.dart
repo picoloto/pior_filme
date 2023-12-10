@@ -14,7 +14,7 @@ class MovieWinnersWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Movie>>(
-      future: dashboardController.getMovieWinnerByYear(year: 2015),
+      future: dashboardController.getMovieWinnerByYear(),
       builder: (
         BuildContext context,
         AsyncSnapshot<List<Movie>> snapshot,
@@ -39,19 +39,40 @@ class ContentWidget extends StatelessWidget {
     if (snapshot.hasData) {
       List<Movie> list = snapshot.data ?? [];
 
-      return PfListViewSeparated(
-        itemCount: list.length,
-        itemBuilder: (_, index) {
-          Movie movie = list[index];
+      return Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 6),
+            child: TextField(
+              onChanged: (t) => {print('t $t')},
+              maxLength: 4,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                filled: false,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                hintText: "Search for Items",
+                prefixIcon: const Icon(Icons.search),
+                prefixIconColor: Colors.black,
+              ),
+            ),
+          ),
+          PfListViewSeparated(
+            itemCount: list.length,
+            itemBuilder: (_, index) {
+              Movie movie = list[index];
 
-          // TODO: montar filtro
-
-          return ListTile(
-            title: Text('${movie.title}'),
-            leading: const Icon(Icons.emoji_events_outlined),
-            subtitle: Text('ID: ${movie.id}\nYear: ${movie.year.toString()}'),
-          );
-        },
+              return ListTile(
+                title: Text('${movie.title}'),
+                leading: const Icon(Icons.emoji_events_outlined),
+                subtitle:
+                    Text('ID: ${movie.id}\nYear: ${movie.year.toString()}'),
+              );
+            },
+          ),
+        ],
       );
     } else if (snapshot.hasError) {
       return PfFutureError(error: snapshot.error as DioException);

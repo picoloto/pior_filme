@@ -8,19 +8,43 @@ import 'package:pior_filme/repositories/movie/movie_repository.dart';
 class DashboardController extends GetxController {
   final MovieRepository movieRepository = MovieRepository();
 
+  final topStudiosWithWinCount = RxList<Studio>();
+  final topStudiosLoading = RxBool(true);
+  final topStudiosError = Rxn();
+
   @override
   void onInit() async {
     print('DashboardController');
     super.onInit();
   }
 
-  Future<List<Studio>> getTopStudiosWithWinCount() async {
-    StudiosWithWinCountListDto data =
-        await movieRepository.getStudiosWithWinCount();
-    if (data.studios != null && data.studios!.length > 3) {
-      return data.studios!.take(3).toList();
+  Future<void> movieYearSearch(String value) async {
+    if (value.isNotEmpty && value.length == 4) {
+      //  List<ProductsCombined> s = await productList.value;
+      // filterProduct = Future.value(s.where((element) => (element.productName.toLowerCase().contains(value.toLowerCase()))).toList()).obs;
+      getMovieWinnerByYear(year: value);
     }
-    return data.studios ?? [];
+    // filterProduct = productList;
+  }
+
+  Future<void> getTopStudiosWithWinCount() async {
+    try {
+      StudiosWithWinCountListDto data =
+          await movieRepository.getStudiosWithWinCount();
+      topStudiosWithWinCount.clear();
+
+      if (data.studios != null) {
+        topStudiosWithWinCount.addAll(data.studios!.length > 3
+            ? data.studios!.take(3).toList()
+            : data.studios!);
+      }
+      topStudiosLoading.value = false;
+      update();
+    } catch (e) {
+      topStudiosLoading.value = false;
+      topStudiosError.value = e;
+      update();
+    }
   }
 
   Future<List<Year>> getMultipleWinners() async {
@@ -35,7 +59,10 @@ class DashboardController extends GetxController {
     return await movieRepository.getWinIntervalForProducers();
   }
 
-  Future<List<Movie>> getMovieWinnerByYear({required int year}) async {
-    return await movieRepository.getMovieWinnerByYear(year);
+  Future<List<Movie>> getMovieWinnerByYear({String? year}) async {
+    if (year != null) {
+      return await movieRepository.getMovieWinnerByYear(year);
+    }
+    return [];
   }
 }
