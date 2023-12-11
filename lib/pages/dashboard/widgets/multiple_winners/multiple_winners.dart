@@ -28,33 +28,35 @@ class ContentWidget extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     controller.getMultipleWinners();
 
-    return GetBuilder<DashboardController>(builder: (_) {
-      if (controller.multipleWinnersLoading.value) {
-        return const PfFutureLoader();
-      }
+    return GetBuilder<DashboardController>(
+      builder: (_) {
+        if (controller.multipleWinnersLoading.value) {
+          return const PfFutureLoader();
+        }
 
-      if (controller.multipleWinnersError.value != null) {
-        return PfFutureError(
-          error: controller.multipleWinnersError.value as DioException,
-        );
-      }
-
-      if (controller.multipleWinners.isEmpty) {
-        return const PfEmptyList();
-      }
-
-      return PfListViewSeparated(
-        itemCount: controller.multipleWinners.length,
-        itemBuilder: (_, index) {
-          Year year = controller.multipleWinners[index];
-
-          return ListTile(
-            title: Text(year.year.toString()),
-            leading: const Icon(Icons.movie_filter_outlined),
-            subtitle: Text('${year.winnerCount.toString()} winners'),
+        if (controller.multipleWinnersError.value != null) {
+          return PfFutureError(
+            error: controller.multipleWinnersError.value as DioException,
           );
-        },
-      );
-    });
+        }
+
+        if (controller.multipleWinners.isEmpty) {
+          return const PfEmptyList();
+        }
+
+        return PfListViewSeparated(
+          itemCount: controller.multipleWinners.length,
+          itemBuilder: (_, index) {
+            Year year = controller.multipleWinners[index];
+
+            return ListTile(
+              title: Text(year.year.toString()),
+              leading: const Icon(Icons.movie_filter_outlined),
+              subtitle: Text('${year.winnerCount.toString()} winners'),
+            );
+          },
+        );
+      },
+    );
   }
 }

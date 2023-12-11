@@ -17,7 +17,7 @@ Projeto Mobile Flutter cujo objetivo é listar os vencedores da categoria Pior F
 
 ### Como testar o projeto
 
-TODO
+- Rodar o comando `flutter test` para rodar e acompanhar os testes.
 
 ### Arquitetura
 
